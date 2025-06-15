@@ -40,13 +40,12 @@ if ($argc > 1) {
 }
 
 
-$imgs = ['assets/1.png',
-         'assets/2.png', 
-         'assets/3.png', 
-         'assets/4.png',
-         'assets/5.png',
-         'assets/6.png',
-         'assets/7.png',];
+$imgs = ['assets/ekko0.png',
+         'assets/ekko1.png', 
+         'assets/ekko2.png', 
+         'assets/ekko3.png',
+         'assets/ekko4.png',
+         'assets/ekko5.png'];
 
 $largeursprite = 0;
 $hauteursprite = 0;
