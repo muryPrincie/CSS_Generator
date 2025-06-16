@@ -28,11 +28,11 @@ $wayDepart = 'assets/';
 
 
 if ($argc > 1) {
-    if ($argv[1] === '-r' && isset($argv[2])) {
-        $way = $argv[2];
+    if ($argv[1] === '-r') {
+        $way = $argv[1];
         EXPLORE($way);
-    } else {
         echo "Argument -r utilisé! /W-PHP-501-PAR-1-1-cssgenerator-tiana.mury\n";
+    } else {
     }
 } else {
     echo "Aucun argument utilisé.\n";
@@ -106,7 +106,7 @@ imagedestroy($sprite);
 
 //Phrase poétique pour finir
 
-echo "EH vos daronnes elles boivent du Sprite sa mère. $supremeSpritePath\n"
+//echo "EH vos daronnes elles boivent du Sprite sa mère. $supremeSpritePath\n"
 
 
 ?>
