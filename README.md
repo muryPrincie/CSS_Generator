@@ -1,5 +1,5 @@
-IMPORTANT !
-## Prérequis
+## IMPORTANT !
+### Prérequis
 
 - PHP 8.x (ou PHP 7.x)
 - Extension PHP GD activée (obligatoire pour la génération des sprites)
@@ -11,10 +11,10 @@ Si rien n’est affiché, installez-le :
 - Sur Debian/Ubuntu : sudo apt install php-gd
 - Sur Mac (brew) : brew install gd && brew reinstall php
 
-#CSS GENERATOR
+# CSS GENERATOR
 
 
-##Générer une image sprite à partir de plusieurs PNG.
+## Générer une image sprite à partir de plusieurs PNG.
 
 Explorer un dossier récursivement.
 
@@ -26,7 +26,7 @@ php script.php
 👉 Génère une sprite avec les images Ekko dans assets vous pourrez mettre plus tard vos propres images/.
 Fichier généré nom par défaut: image.png
 
-#POUR RENOMMER VOTRE IMAGE GÉNERÉE
+# POUR RENOMMER VOTRE IMAGE GÉNERÉE
 php script.php -i + nom_du_png
 
 👉 Avec l'argument i, si vous ne le renommez point le sprite s’appellera sprite.png par défaut
