@@ -1,112 +1,92 @@
 <?php
-function EXPLORE($way) {
-    if (is_dir($way)) {
-        echo "Contenu css génerator $way\n";
-        echo "--------------------------\n";
 
-    
-        $contenu = glob($way . '*'); 
-
-        foreach ($contenu as $élément) {
-            if (is_dir($élément)) {
-               
-                echo "[Dossier] : " . ($élément) . "\n"; 
-               
-            } elseif (is_file($élément)) {
-                
-                echo "[Fichier] : " . ($élément) . "\n";
-            }
+function exploreRecursive($dir) {
+    $items = scandir($dir);
+    foreach ($items as $item) {
+        if ($item === '.' || $item === '..') continue;
+        $path = $dir . DIRECTORY_SEPARATOR . $item;
+        if (is_dir($path)) {
+            echo "[Dossier] : $path\n";
+            exploreRecursive($path);
+        } elseif (is_file($path)) {
+            echo "[Fichier] : $path\n";
         }
-    } else {
-        echo "chemin invalide ou non un répertoire : $way\n";
     }
-    
 }
 
-$wayDepart = 'assets/'; 
- EXPLORE($wayDepart);
+function createSpriteFromImages($images, $outputImage = "sprite.png") {
+    $imgsArray = [];
+    $totalWidth = 0;
+    $maxHeight = 0;
 
+    foreach ($images as $imgPath) {
+        if (pathinfo($imgPath, PATHINFO_EXTENSION) !== 'png') {
+            echo "Mauvais format : $imgPath\n";
+            continue;
+        }
 
-if ($argc > 1) {
-    if ($argv[1] === '-r' && isset($argv[2])) {
-        $way = $argv[2];
-        EXPLORE($way);
-    } else {
-        echo "Argument -r utilisé! /W-PHP-501-PAR-1-1-cssgenerator-tiana.mury\n";
+        $img = @imagecreatefrompng($imgPath);
+        if (!$img) {
+            echo "Impossible de charger : $imgPath\n";
+            continue;
+        }
+
+        $width = imagesx($img);
+        $height = imagesy($img);
+        $totalWidth += $width;
+        $maxHeight = max($maxHeight, $height);
+        $imgsArray[] = ['img' => $img, 'width' => $width, 'height' => $height];
     }
+
+    if (empty($imgsArray)) {
+        echo "Aucune image valide pour créer un sprite.\n";
+        return;
+    }
+
+    $sprite = imagecreatetruecolor($totalWidth, $maxHeight);
+    imagealphablending($sprite, false);
+    imagesavealpha($sprite, true);
+    $transparent = imagecolorallocatealpha($sprite, 0, 0, 0, 127);
+    imagefill($sprite, 0, 0, $transparent);
+
+    $x = 0;
+    foreach ($imgsArray as $entry) {
+        imagecopy($sprite, $entry['img'], $x, 0, 0, 0, $entry['width'], $entry['height']);
+        $x += $entry['width'];
+        imagedestroy($entry['img']);
+    }
+
+    imagepng($sprite, $outputImage);
+    imagedestroy($sprite);
+    echo "Sprite généré : $outputImage\n";
+}
+
+$recursive = in_array("-r", $argv);
+$imgNameIndex = array_search("-i", $argv);
+
+if ($imgNameIndex !== false) {
+    $outputImage = isset($argv[$imgNameIndex + 1]) && $argv[$imgNameIndex + 1][0] !== '-'
+        ? $argv[$imgNameIndex + 1]
+        : 'sprite.png';
 } else {
-    echo "Aucun argument utilisé.\n";
-    return false;
+    $outputImage = 'image.png';
 }
 
-
-$imgs = ['assets/ekko0.png',
-         'assets/ekko1.png', 
-         'assets/ekko2.png', 
-         'assets/ekko3.png',
-         'assets/ekko4.png',
-         'assets/ekko5.png'];
-
-$largeursprite = 0;
-$hauteursprite = 0;
-$imgsArray = [];
-
-
-foreach ($imgs as $extension)
-    { 
-  
-    if (pathinfo($extension, PATHINFO_EXTENSION) !== 'png') { 
-        echo "Ca va pas etre possible, faut etre un png \n";
-        continue;
-    }
-    
-   
-    $img = imagecreatefrompng($extension);
-    if ($img) { 
-        $imgsArray[] = $img;
-        $largeur = imagesx($img); 
-        $hauteur = imagesy($img); 
-        
-       
-        $largeursprite += $largeur; 
-        $hauteursprite = max($hauteursprite, $hauteur); 
-       
-    } else {
-        echo "Impossible de charger l'image $extension.\n"; //RIP.
-    }
+if ($recursive && $argc === 2) {
+    echo "Liste récursive des fichiers dans assets/ :\n";
+    exploreRecursive("assets");
+    exit;
 }
 
-
-$sprite = imagecreatetruecolor($largeursprite, $hauteursprite);
-
-
-$transparentColor = imagecolorallocatealpha($sprite, 0, 0, 0, 127); 
-imagefill($sprite, 0, 0, $transparentColor); 
-imagesavealpha($sprite, true); 
-
-$xOffset = 0;
-
-foreach ($imgsArray as $img) {
-    imagecopy($sprite, $img, $xOffset, 0, 0, 0, imagesx($img), imagesy($img));
-    
-    
-    
-    $xOffset += imagesx($img);
+if (!$recursive) {
+    $imgs = [
+        'assets/ekko0.png',
+        'assets/ekko1.png',
+        'assets/ekko2.png',
+        'assets/ekko3.png',
+        'assets/ekko4.png',
+        'assets/ekko5.png'
+    ];
+    createSpriteFromImages($imgs, $outputImage);
+    exit;
 }
-
-
-$supremeSpritePath = 'sprite.png'; 
-imagepng($sprite, $supremeSpritePath);
-
-
-foreach ($imgsArray as $img) { 
-    imagedestroy($img);
-}
-imagedestroy($sprite); 
-
-//Phrase poétique pour finir
-
-echo "EH vos daronnes elles boivent du Sprite sa mère. $supremeSpritePath\n"
-
-
-?>
